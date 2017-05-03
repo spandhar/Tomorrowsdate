@@ -1,0 +1,145 @@
+
+
+	;Local $sDay =@MDAY
+	;Local $sMonth =@MON
+	;Local $sYear = @YEAR
+	;$sDay= InputBox("Enter Day", "Enter day of the month.")
+	;$sMonth = InputBox("Enter Month", "Enter the month.")
+	;;$sYear = InputBox("Enter Year", "Enter the Year.")
+
+;this will update the values of $sDay, $sMonth, $sYear variables to tommorrows date
+;SetTomorrowsDate($sDay, $sMonth, $sYear)
+
+;MsgBox (0, "Debug check", "checking updated tommorows date after function..... ")
+;	MsgBox(0,"Date",$sDay)
+;	MsgBox(0,"Month",$sMonth)
+;	MsgBox(0,"Year",$sYear)
+
+;function to change the date to valid tommorows date
+;Pass params to change thiere values to valid tommorrow date
+;Pass raw @MDAY, @MON @YEAR values without type casting
+; this function will update the values of passed variables to tommorow
+
+
+Func SetTomorrowsDate(ByRef $xDay, ByRef $xMonth,ByRef $xYear)
+	;MsgBox(0,"Debug msg ", "Inside the SetTommorowsDate func")
+	;Add one to the date
+	Local $NDate = $xDay +1;current date + 1
+	Local $Mon = $xMonth
+	Local $NYear = $xYear
+
+;========Logic to check for next day of the month========================
+	;check if month is even or odd if rem > 0 : odd and if rem ==0 : even
+	;MsgBox (0,"Control check","calculating reminders..... " )
+
+	Local $rem;
+	$rem = Mod($Mon,2)
+	;if $YearMod4 == 0 then Leapyear
+	Local $YearMod4
+	$YearMod4 = Mod($NYear,4)
+
+	;Messages for debugging
+	;MsgBox (0,"Control check","calculating reminders done" )
+	;MsgBox(0,"Month Mod 2",$rem)
+	;MsgBox(0,"Year Mod 4",$YearMod4)
+	;MsgBox(0,"Day",$NDate)
+	;MsgBox(0,"Mon",$Mon)
+
+
+;;first posssible invallid date 29th feb :
+;;if date is 29 check i month is feb and year is not leap
+	If ($NDate == "29" ) Then
+		;MsgBox(0,"Case 29","CASE date 29")
+		If  $Mon == "2" Then
+			If $YearMod4 <> 0 Then
+				$NDate="01"
+				$Mon=$Mon+1
+				If $Mon < 10 Then
+					$Mon="0"&$Mon
+				EndIf
+
+				Sleep(1000)
+
+			EndIf
+
+		EndIf
+
+;;2nd possible invalid date is 30feb in leap year
+	ElseIf ($NDate == "30" ) Then
+		If  $Mon == "2" Then
+			If $YearMod4 == 0 Then
+
+				$NDate="01"
+				$Mon=$Mon+1
+				If $Mon < 10 Then
+					$Mon="0"&$Mon
+				EndIf
+
+				Sleep(1000)
+
+			EndIf
+		EndIf
+
+;;3rd possible invalid date is 31st odd months from september
+	ElseIf ($NDate=="31" And  $rem > 0) Then
+
+		If $Mon > 7 Then
+			$NDate="01"
+			$Mon=$Mon+1
+			If $Mon < 10 Then
+				$Mon="0"&$Mon
+			EndIf
+	;
+			Sleep(1000)
+	;
+		EndIf
+
+
+;;4th possible invalid date is 31st of even  month before july
+	ElseIf ($NDate=="31" And  $rem == 0) Then
+		MsgBox(0,"Case ","CASE 3")
+		If $Mon < 7 Then
+			$NDate="01"
+			$Mon=$Mon+1
+			If $Mon < 10 Then
+				$Mon="0"&$Mon
+			EndIf
+	;
+			Sleep(1000)
+	;
+		EndIf
+
+
+;;32nd is always invalid
+	ElseIf $NDate=="32" Then
+
+		$NDate="01"
+		$Mon=$Mon+1
+
+		If $Mon == "13" Then
+			$Mon = "1"
+			$NYear = $NYear +1
+		EndIf
+		If $Mon < 10 Then
+			$Mon="0"&$Mon
+		EndIf
+	;
+		Sleep(1000)
+
+	Else
+		;error wrong date
+
+	EndIf
+
+	;MsgBox(0,"Date",$NDate)
+	;MsgBox(0,"Month",$Mon)
+	;MsgBox(0,"Year",$NYear)
+
+;MsgBox(0, "Control check ", "returning values")
+
+;;change the original date variables
+	$xDay = $NDate
+	$xMonth = $Mon
+	$xYear = $NYear
+;MsgBox(0,"Control chek ","returning frm function ")
+EndFunc
